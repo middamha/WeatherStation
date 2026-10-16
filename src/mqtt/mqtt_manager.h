@@ -16,6 +16,13 @@ public:
 
     bool isConnected();
 
+    bool publish(
+        const char* topic,
+        const char* payload,
+        bool retained = true);
+
+    PubSubClient& getClient();
+
 private:
     void publishSystemTopics();
 

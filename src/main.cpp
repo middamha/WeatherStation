@@ -5,11 +5,13 @@
 #include "wifi/wifi_manager.h"
 #include "web/web_manager.h"
 #include "mqtt/mqtt_manager.h"
+#include "ha/ha_discovery.h"
 
 ConfigManager configManager;
 WiFiManager wifiManager;
 WebManager webManager;
 MQTTManager mqttManager;
+HADiscovery haDiscovery;
 
 void setup()
 {
@@ -54,6 +56,13 @@ void setup()
     mqttManager.begin(&configManager);
 
     mqttManager.connect();
+if (mqttManager.isConnected())
+{
+    haDiscovery.publish(
+        &mqttManager,
+        &configManager);
+}
+
 }
 
 void loop()

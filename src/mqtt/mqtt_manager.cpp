@@ -46,8 +46,12 @@ bool MQTTManager::connect()
         return false;
     }
 
-    Serial.println(
-        "MQTT CONNECTED");
+    Serial.println("MQTT CONNECTED");
+
+    mqttClient.publish(
+        "weather/status",
+        "online",
+        true);
 
     publishSystemTopics();
 
@@ -57,40 +61,56 @@ bool MQTTManager::connect()
 void MQTTManager::publishSystemTopics()
 {
     mqttClient.publish(
-        "weather/status",
-        "online",
-        true);
-
-    mqttClient.publish(
         "weather/system/ip",
-        WiFi.localIP()
-            .toString()
-            .c_str(),
+        WiFi.localIP().toString().c_str(),
         true);
 
     mqttClient.publish(
         "weather/system/rssi",
-        String(WiFi.RSSI())
-            .c_str(),
+        String(WiFi.RSSI()).c_str(),
         true);
 
     mqttClient.publish(
         "weather/system/heap",
-        String(ESP.getFreeHeap())
-            .c_str(),
+        String(ESP.getFreeHeap()).c_str(),
         true);
 
     mqttClient.publish(
         "weather/system/psram",
-        String(ESP.getFreePsram())
-            .c_str(),
+        String(ESP.getFreePsram()).c_str(),
         true);
 
     mqttClient.publish(
         "weather/system/uptime",
-        String(millis() / 1000)
-            .c_str(),
+        String(millis() / 1000).c_str(),
         true);
+}
+
+bool MQTTManager::publish(
+    const char* topic,
+    const char* payload,
+    bool retained)
+{
+    if (!mqttClient.connected())
+    {
+        return false;
+    }
+
+    bool result =
+        mqttClient.publish(
+            topic,
+            payload,
+            retained);
+
+    Serial.print("MQTT PUBLISH: ");
+    Serial.println(topic);
+
+    return result;
+}
+
+PubSubClient& MQTTManager::getClient()
+{
+    return mqttClient;
 }
 
 bool MQTTManager::isConnected()
@@ -100,8 +120,6 @@ bool MQTTManager::isConnected()
 
 void MQTTManager::loop()
 {
-    mqttClient.loop();
-
     if (!mqttClient.connected())
     {
         if (millis() - lastReconnect > 5000)
@@ -113,6 +131,8 @@ void MQTTManager::loop()
 
         return;
     }
+
+    mqttClient.loop();
 
     if (millis() - lastPublish > 60000)
     {
