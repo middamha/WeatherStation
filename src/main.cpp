@@ -107,6 +107,11 @@ mqttClient.publish(
     String(ESP.getFreeHeap()).c_str(),
     true);
 
+    mqttClient.publish(
+    "weather/system/psram",
+    String(ESP.getFreePsram()).c_str(),
+    true);
+
     Serial.print("PUBLISH RESULT=");
     Serial.println(pubResult);
 }
