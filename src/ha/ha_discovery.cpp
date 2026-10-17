@@ -185,3 +185,46 @@ void HADiscovery::publishBME280(
         "homeassistant/sensor/weatherstation_bme280_humidity/config",
         payload.c_str());
 }
+// HTU21D Entities
+
+void HADiscovery::publishHTU21D(
+    MQTTManager* mqtt,
+    ConfigManager* config)
+{
+    String device =
+        createDeviceBlock(config);
+
+    String payload;
+
+    payload =
+        "{"
+        "\"name\":\"HTU21D Temperature\","
+        "\"unique_id\":\"weatherstation_htu21d_temp\","
+        "\"state_topic\":\"weather/htu21d/temp\","
+        "\"unit_of_measurement\":\"°C\","
+        "\"device_class\":\"temperature\","
+        "\"state_class\":\"measurement\",";
+
+    payload += device;
+    payload += "}";
+
+    mqtt->publish(
+        "homeassistant/sensor/weatherstation_htu21d_temp/config",
+        payload.c_str());
+
+    payload =
+        "{"
+        "\"name\":\"HTU21D Humidity\","
+        "\"unique_id\":\"weatherstation_htu21d_humidity\","
+        "\"state_topic\":\"weather/htu21d/humidity\","
+        "\"unit_of_measurement\":\"%\","
+        "\"device_class\":\"humidity\","
+        "\"state_class\":\"measurement\",";
+
+    payload += device;
+    payload += "}";
+
+    mqtt->publish(
+        "homeassistant/sensor/weatherstation_htu21d_humidity/config",
+        payload.c_str());
+}

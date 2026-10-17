@@ -15,6 +15,10 @@ public:
         MQTTManager* mqtt,
         ConfigManager* config);
 
+    void publishHTU21D(
+        MQTTManager* mqtt,
+    ConfigManager* config);
+
 private:
     String createDeviceBlock(
         ConfigManager* config);

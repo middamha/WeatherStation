@@ -9,6 +9,7 @@
 #include "ha/ha_discovery.h"
 
 #include "sensors/bme280_sensor.h"
+#include "sensors/htu21d_sensor.h"
 
 ConfigManager configManager;
 WiFiManager wifiManager;
@@ -18,6 +19,8 @@ MQTTManager mqttManager;
 HADiscovery haDiscovery;
 
 BME280Sensor bme280;
+HTU21DSensor htu21d;
+
 
 void setup()
 {
@@ -77,6 +80,10 @@ void setup()
 haDiscovery.publishBME280(
     &mqttManager,
     &configManager);
+
+haDiscovery.publishHTU21D(
+    &mqttManager,
+    &configManager);
     }
 
     if (bme280.begin())
@@ -89,6 +96,18 @@ haDiscovery.publishBME280(
         Serial.println(
             "BME280 READY");
     }
+    if (htu21d.begin())
+{
+    htu21d.setInterval(
+        cfg.sensorIntervalSeconds);
+
+    htu21d.update();
+
+    Serial.println(
+        "HTU21D READY");
+}
+    
+
 }
 
 void loop()
@@ -102,6 +121,14 @@ void loop()
     if (bme280.hasNewMeasurement())
     {
         bme280.publish(
+            &mqttManager);
+    }
+
+    htu21d.update();
+
+    if (htu21d.hasNewMeasurement())
+    {
+        htu21d.publish(
             &mqttManager);
     }
 }
