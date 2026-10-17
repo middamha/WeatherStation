@@ -35,6 +35,11 @@ bool ConfigManager::load()
             "station",
             "WeatherStation");
 
+    config.sensorIntervalSeconds =
+        preferences.getUInt(
+            "interval",
+            300);
+
     return true;
 }
 
@@ -67,6 +72,10 @@ bool ConfigManager::save()
     preferences.putString(
         "station",
         config.stationName);
+    
+    preferences.putUInt(
+        "interval",
+        config.sensorIntervalSeconds);
 
     return true;
 }

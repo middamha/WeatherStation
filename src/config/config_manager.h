@@ -14,6 +14,8 @@ struct AppConfig
     String mqttPassword;
 
     String stationName;
+
+    uint32_t sensorIntervalSeconds;
 };
 
 class ConfigManager

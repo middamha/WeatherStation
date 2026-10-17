@@ -6,12 +6,15 @@
 #include "web/web_manager.h"
 #include "mqtt/mqtt_manager.h"
 #include "ha/ha_discovery.h"
+#include "sensors/bme280_sensor.h"
+
 
 ConfigManager configManager;
 WiFiManager wifiManager;
 WebManager webManager;
 MQTTManager mqttManager;
 HADiscovery haDiscovery;
+BME280Sensor bme280;
 
 void setup()
 {
@@ -62,7 +65,16 @@ if (mqttManager.isConnected())
         &mqttManager,
         &configManager);
 }
+if (bme280.begin())
+{
+    bme280.setInterval(
+        cfg.sensorIntervalSeconds);
 
+    bme280.update();
+
+    Serial.println(
+        "BME280 READY");
+}
 }
 
 void loop()
@@ -70,4 +82,24 @@ void loop()
     wifiManager.loop();
 
     mqttManager.loop();
+
+    bme280.update();
+
+     if (bme280.hasNewMeasurement())
+    {
+        mqttManager.publishSensor(
+            "weather/bme280/temp",
+            bme280.getTemperature());
+
+        mqttManager.publishSensor(
+            "weather/bme280/pressure",
+            bme280.getPressure());
+
+        mqttManager.publishSensor(
+            "weather/bme280/humidity",
+            bme280.getHumidity());
+
+        Serial.println(
+            "BME280 MQTT PUBLISHED");
+    }
 }

@@ -140,4 +140,23 @@ void MQTTManager::loop()
 
         publishSystemTopics();
     }
+    
+}
+bool MQTTManager::publishSensor(
+    const char* topic,
+    float value,
+    uint8_t precision)
+{
+    char buffer[32];
+
+    dtostrf(
+        value,
+        0,
+        precision,
+        buffer);
+
+    return publish(
+        topic,
+        buffer,
+        true);
 }

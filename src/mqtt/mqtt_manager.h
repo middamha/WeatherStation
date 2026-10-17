@@ -21,6 +21,11 @@ public:
         const char* payload,
         bool retained = true);
 
+    bool publishSensor(
+             const char* topic,
+            float value,
+            uint8_t precision = 1);     
+
     PubSubClient& getClient();
 
 private:

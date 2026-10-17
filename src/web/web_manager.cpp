@@ -58,6 +58,10 @@ void WebManager::begin(ConfigManager *configManager)
             html += String(millis() / 1000);
             html += " s</p>";
 
+html += "<p><b>Measurement Interval:</b> ";
+html += String(cfg.sensorIntervalSeconds);
+html += " s</p>";
+
             html += "<p><b>Free Heap:</b> ";
             html += String(ESP.getFreeHeap());
             html += "</p>";
@@ -131,6 +135,42 @@ void WebManager::begin(ConfigManager *configManager)
             html += "MQTT Password:<br>";
             html += "<input type='password' name='mqttpass'><br><br>";
 
+html += "Measurement Interval:<br>";
+
+html += "<select name='interval'>";
+
+html += "<option value='60'";
+if (cfg.sensorIntervalSeconds == 60)
+    html += " selected";
+html += ">1 minute</option>";
+
+html += "<option value='300'";
+if (cfg.sensorIntervalSeconds == 300)
+    html += " selected";
+html += ">5 minutes</option>";
+
+html += "<option value='600'";
+if (cfg.sensorIntervalSeconds == 600)
+    html += " selected";
+html += ">10 minutes</option>";
+
+html += "<option value='900'";
+if (cfg.sensorIntervalSeconds == 900)
+    html += " selected";
+html += ">15 minutes</option>";
+
+html += "<option value='1800'";
+if (cfg.sensorIntervalSeconds == 1800)
+    html += " selected";
+html += ">30 minutes</option>";
+
+html += "<option value='3600'";
+if (cfg.sensorIntervalSeconds == 3600)
+    html += " selected";
+html += ">60 minutes</option>";
+
+html += "</select><br><br>";
+
             html += "Station Name:<br>";
             html += "<input type='text' name='station' value='";
             html += cfg.stationName;
@@ -169,6 +209,9 @@ void WebManager::begin(ConfigManager *configManager)
 
             cfg.mqttUser = request->arg("mqttuser");
             cfg.mqttPassword = request->arg("mqttpass");
+
+            cfg.sensorIntervalSeconds = request->arg("interval").toInt();
+    
 
             cfg.stationName = request->arg("station");
 
