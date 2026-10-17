@@ -6,7 +6,12 @@
 class HADiscovery
 {
 public:
-    void publish(
+
+    void publishSystemEntities(
+        MQTTManager* mqtt,
+        ConfigManager* config);
+
+    void publishBME280(
         MQTTManager* mqtt,
         ConfigManager* config);
 

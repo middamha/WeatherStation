@@ -26,6 +26,18 @@ public:
             float value,
             uint8_t precision = 1);     
 
+    bool publishTemperature(
+    const char* topic,
+    float value);
+
+bool publishPressure(
+    const char* topic,
+    float value);
+
+bool publishHumidity(
+    const char* topic,
+    float value);
+
     PubSubClient& getClient();
 
 private:

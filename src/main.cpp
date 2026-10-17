@@ -4,16 +4,19 @@
 #include "system/logger.h"
 #include "wifi/wifi_manager.h"
 #include "web/web_manager.h"
+
 #include "mqtt/mqtt_manager.h"
 #include "ha/ha_discovery.h"
-#include "sensors/bme280_sensor.h"
 
+#include "sensors/bme280_sensor.h"
 
 ConfigManager configManager;
 WiFiManager wifiManager;
 WebManager webManager;
+
 MQTTManager mqttManager;
 HADiscovery haDiscovery;
+
 BME280Sensor bme280;
 
 void setup()
@@ -34,7 +37,8 @@ void setup()
 
         wifiManager.beginAP();
 
-        webManager.begin(&configManager);
+        webManager.begin(
+            &configManager);
 
         return;
     }
@@ -45,36 +49,46 @@ void setup()
             cfg.wifiSSID,
             cfg.wifiPassword))
     {
-        Logger::error("WIFI FAILED");
+        Logger::error(
+            "WIFI FAILED");
 
         wifiManager.beginAP();
 
-        webManager.begin(&configManager);
+        webManager.begin(
+            &configManager);
 
         return;
     }
 
-    webManager.begin(&configManager);
+    webManager.begin(
+        &configManager);
 
-    mqttManager.begin(&configManager);
+    mqttManager.begin(
+        &configManager);
 
     mqttManager.connect();
-if (mqttManager.isConnected())
-{
-    haDiscovery.publish(
-        &mqttManager,
-        &configManager);
-}
-if (bme280.begin())
-{
-    bme280.setInterval(
-        cfg.sensorIntervalSeconds);
 
-    bme280.update();
+    if (mqttManager.isConnected())
+    {
+       haDiscovery.publishSystemEntities(
+    &mqttManager,
+    &configManager);
 
-    Serial.println(
-        "BME280 READY");
-}
+haDiscovery.publishBME280(
+    &mqttManager,
+    &configManager);
+    }
+
+    if (bme280.begin())
+    {
+        bme280.setInterval(
+            cfg.sensorIntervalSeconds);
+
+        bme280.update();
+
+        Serial.println(
+            "BME280 READY");
+    }
 }
 
 void loop()
@@ -85,21 +99,9 @@ void loop()
 
     bme280.update();
 
-     if (bme280.hasNewMeasurement())
+    if (bme280.hasNewMeasurement())
     {
-        mqttManager.publishSensor(
-            "weather/bme280/temp",
-            bme280.getTemperature());
-
-        mqttManager.publishSensor(
-            "weather/bme280/pressure",
-            bme280.getPressure());
-
-        mqttManager.publishSensor(
-            "weather/bme280/humidity",
-            bme280.getHumidity());
-
-        Serial.println(
-            "BME280 MQTT PUBLISHED");
+        bme280.publish(
+            &mqttManager);
     }
 }

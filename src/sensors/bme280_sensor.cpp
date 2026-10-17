@@ -81,15 +81,6 @@ void BME280Sensor::update()
 
     Serial.println(
         "BME280 MEASUREMENT");
-
-    Serial.print("TEMP: ");
-    Serial.println(temperature);
-
-    Serial.print("PRESSURE: ");
-    Serial.println(pressure);
-
-    Serial.print("HUMIDITY: ");
-    Serial.println(humidity);
 }
 
 bool BME280Sensor::hasNewMeasurement()
@@ -102,6 +93,25 @@ bool BME280Sensor::hasNewMeasurement()
     newMeasurement = false;
 
     return true;
+}
+
+void BME280Sensor::publish(
+    MQTTManager* mqtt)
+{
+    mqtt->publishSensor(
+        "weather/bme280/temp",
+        temperature);
+
+    mqtt->publishSensor(
+        "weather/bme280/pressure",
+        pressure);
+
+    mqtt->publishSensor(
+        "weather/bme280/humidity",
+        humidity);
+
+    Serial.println(
+        "BME280 MQTT PUBLISHED");
 }
 
 bool BME280Sensor::isAvailable()

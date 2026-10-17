@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Adafruit_BME280.h>
-
 #include "sensor_base.h"
+#include "../mqtt/mqtt_manager.h"
 
 class BME280Sensor : public SensorBase
 {
@@ -23,6 +23,10 @@ public:
     float getHumidity();
 
     bool hasNewMeasurement();
+
+    void publish(
+    MQTTManager* mqtt);
+
 
 private:
     Adafruit_BME280 bme;
